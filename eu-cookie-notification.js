@@ -25,7 +25,7 @@ var cookies = function(){
                 }
             }
 
-            return "";
+            return false;
         }
     };
 }();
