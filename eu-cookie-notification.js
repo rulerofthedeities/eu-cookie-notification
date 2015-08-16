@@ -2,13 +2,12 @@
 var cookies = function(){
     return {
         //Function that sets the cookie with expiration in days
-        setCookie: function(cookie, value, epxiration){
+        setCookie: function(cookie, value, expiration){
             var d = new Date();
-            d.setTime(d.getTime() + (epxiration*24*60*60*1000));
+            d.setTime(d.getTime() + (expiration*24*60*60*1000));
             var expires = "expires=" + d.toUTCString();
             document.cookie = cookie + "=" + value + "; " + expires;
         },
-
         //Function that attempts to retrieve the cookie if it is set.
         getCookie: function(cookie){
             var name = cookie + "=",
@@ -26,27 +25,49 @@ var cookies = function(){
             }
 
             return false;
+        },
+        //Adds cookie notice to DOM
+        showCookieNotice: function(){
+            var z = document.createElement('div');
+            z.setAttribute('id', 'eucookie-notice');
+            z.setAttribute('class', 'notice');
+            //Uncomment the following line if you would like to use inline-styles or just style the elements using your stylesheet.
+            //z.setAttribute('style', 'position: fixed; left: 0; bottom: 0; width: 100%; background: #fff; border: 1px solid blue;');
+
+            z.innerHTML = '<p>To remain compliant with EU laws we would like to inform you that this site uses cookies. Read more <a href="/privacy/">here</a>. | <a  id="dismiss-eu-notice" href="" onclick="cookies.setCookie(\'eucookie\', true, 365); document.getElementById(\'eucookie-notice\').style.display=\'none\';">Dismiss</a></p>';
+
+            document.body.appendChild(z);
+
+            //Click listener to prevent default behavior for the "Dismiss" link.
+            document.getElementById('dismiss-eu-notice').addEventListener('click', function(event) {
+                event.preventDefault();
+            });
         }
     };
 }();
 
+var cookieNotice = function(){
+    //If the cookie is not set, then display the notice
+    if (!cookies.getCookie('eucookie')) {
+        cookies.showCookieNotice();
+    }
+};
 
-//If the cookie is not set, then display the notice
-if (!cookies.getCookie('eucookie')) {
-    var z = document.createElement('div');
-
-    z.setAttribute('id', 'eucookie-notice');
-    z.setAttribute('class', 'notice');
-    //Uncomment the following line if you would like to use inline-styles or just style the elements using your stylesheet.
-    //z.setAttribute('style', 'position: fixed; left: 0; bottom: 0; width: 100%; background: #fff; border: 1px solid blue;');
-
-    z.innerHTML = '<p>To remain compliant with EU laws we would like to inform you that this site uses cookies. Read more <a href="/privacy/">here</a>. | <a  id="dismiss-eu-notice" href="" onclick="cookies.setCookie(\'eucookie\', true, 365); document.getElementById(\'eucookie-notice\').style.display=\'none\';">Dismiss</a></p>';
-
-    document.body.appendChild(z);
-
-    //Click listener to prevent default behavior for the "Dismiss" link.
-    document.getElementById('dismiss-eu-notice').addEventListener('click', function(event) {
-        event.preventDefault();
+//Check if DOM is loaded
+if ( !!(window.addEventListener) )
+{
+    window.addEventListener("DOMContentLoaded", function(event) { 
+        cookieNotice();
     });
+}
+else 
+{
+    //IE 8 or lower
+    var readyStateCheckInterval = setInterval(function() {
+        if (document.readyState === "complete") {
+            clearInterval(readyStateCheckInterval);
+            cookieNotice();
+        }
+    }, 10);
 }
  </script>
